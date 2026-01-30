@@ -14,13 +14,13 @@
 // 2. Remove RTC Battery to ensure RTC is not running
 // 3. Compiled and upload datetime setting based on your computer time
 // 4. Remove and insert USB power to hard reset your Arduino
-// 5. Insert RTC Battery to ensure RTC continue to run even USB power is remove
+// 5. Insert RTC Battery to keep RTC continue to run even USB power is remove
 
 // Developed by Rodney Tan
 // Version 1.00 (Jan 2026)
 
 #include <Wire.h>
-#include "RTClib.h"
+#include "RTClib.h" // Required Library RTClib by Adafruit
 
 RTC_DS1307 rtc;
 int lastSecond = -1;  // Initialize to an invalid second
@@ -29,6 +29,12 @@ void setup() {
   Serial.begin(115200);
   Wire.begin();
   
+  if (!rtc.begin()) {
+    Serial.println("Couldn't find RTC");
+    Serial.flush();
+    while(1);
+  }
+
   if (!rtc.isrunning()) {
     Serial.println("RTC is NOT running, setting the time!");
     rtc.adjust(DateTime(F(__DATE__), F(__TIME__))); // Compiled and upload datetime setting based on your computer time
@@ -42,18 +48,17 @@ void loop() {
   if (now.second() != lastSecond) {
     lastSecond = now.second();
 
-    Serial.print(now.year(), DEC);
+    Serial.print(now.year());
     Serial.print('/');
-    Serial.print(now.month(), DEC);
+    Serial.print(now.month());
     Serial.print('/');
-    Serial.print(now.day(), DEC);
+    Serial.print(now.day());
     Serial.print(" ");
-    Serial.print(now.hour(), DEC);
+    Serial.print(now.hour());
     Serial.print(':');
-    Serial.print(now.minute(), DEC);
+    Serial.print(now.minute());
     Serial.print(':');
-    Serial.print(now.second(), DEC);
-    Serial.println();
+    Serial.println(now.second());
   }
 
 }
